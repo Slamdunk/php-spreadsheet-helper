@@ -1,0 +1,14 @@
+includes:
+    - vendor/phpstan/phpstan-phpunit/extension.neon
+    - vendor/slam/phpstan-extensions/conf/slam-rules.neon
+    - phpstan-baseline.neon
+
+parameters:
+    level: 8
+    checkMissingIterableValueType: false
+    paths:
+        - lib/
+        - tests/
+    excludePaths:
+        analyseAndScan:
+        - %currentWorkingDirectory%/lib/Pear/*
