@@ -37,13 +37,15 @@ $columnCollection = new ExcelHelper\ColumnCollection(...[
     new ExcelHelper\Column('column_3',  'Date',     15,     new ExcelHelper\CellStyle\Date()),
 ]);
 
-$spreadsheet = new PhpSpreadsheet\Spreadsheet();
+$spreadsheet = new PhpOffice\PhpSpreadsheet\Spreadsheet();
 
-$table = new ExcelHelper\Table($spreadsheet->getActiveSheet(), 1, 1, 'My Heading', $users);
+$activeSheet = $spreadsheet->getActiveSheet();
+$activeSheet->setTitle('My Users');
+$table = new ExcelHelper\Table($activeSheet, 1, 1, 'My Heading', $users);
 $table->setColumnCollection($columnCollection);
 
-(new TableWriter())->writeTableToWorksheet($table);
-(new PhpSpreadsheet\Writer\Xlsx($spreadsheet))->save(__DIR__.'/test.xlsx');
+(new ExcelHelper\TableWriter())->writeTableToWorksheet($table);
+(new PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet))->save(__DIR__.'/test.xlsx');
 ```
 
 Result:
