@@ -22,7 +22,7 @@ final class ColumnCollectionTest extends TestCase
 
     public function testBaseFunctionalities(): void
     {
-        self::assertArrayHasKey('foo', $this->collection);
+        self::assertArrayHasKey('foo', $this->collection->getArrayCopy());
         self::assertSame($this->column, $this->collection['foo']);
     }
 }

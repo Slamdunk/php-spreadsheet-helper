@@ -7,7 +7,7 @@ namespace Slam\PhpSpreadsheetHelper;
 use ArrayObject;
 
 /**
- * @extends ArrayObject<string, Column>
+ * @extends ArrayObject<string, ColumnInterface>
  */
 final class ColumnCollection extends ArrayObject
 {

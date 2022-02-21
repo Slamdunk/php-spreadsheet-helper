@@ -18,15 +18,26 @@ final class Table implements Countable
     private int $columnEnd;
     private int $columnCurrent;
     private string $heading;
+
+    /**
+     * @var iterable<int, array<string, null|float|int|string>>
+     */
     private iterable $data;
     private ColumnCollection $columnCollection;
-    private bool $freezePanes                            = true;
-    private int $fontSize                                = 8;
-    private ?int $rowHeight                              = null;
-    private bool $textWrap                               = false;
-    private ?array $writtenColumnTitles                  = null;
-    private ?int $count                                  = null;
+    private bool $freezePanes = true;
+    private int $fontSize     = 8;
+    private ?int $rowHeight   = null;
+    private bool $textWrap    = false;
 
+    /**
+     * @var array<string, string>
+     */
+    private array $writtenColumnTitles = [];
+    private ?int $count                = null;
+
+    /**
+     * @param iterable<int, array<string, null|float|int|string>> $data
+     */
     public function __construct(Worksheet $activeSheet, int $row, int $column, string $heading, iterable $data)
     {
         $this->activeSheet = $activeSheet;
@@ -119,6 +130,9 @@ final class Table implements Countable
         return $this->heading;
     }
 
+    /**
+     * @return iterable<int, array<string, null|float|int|string>>
+     */
     public function getData(): iterable
     {
         return $this->data;
@@ -174,12 +188,18 @@ final class Table implements Countable
         return $this->textWrap;
     }
 
-    public function setWrittenColumnTitles(?array $writtenColumnTitles): void
+    /**
+     * @param array<string, string> $writtenColumnTitles
+     */
+    public function setWrittenColumnTitles(array $writtenColumnTitles): void
     {
         $this->writtenColumnTitles = $writtenColumnTitles;
     }
 
-    public function getWrittenColumnTitles(): ?array
+    /**
+     * @return array<string, string>
+     */
+    public function getWrittenColumnTitles(): array
     {
         return $this->writtenColumnTitles;
     }

@@ -12,7 +12,7 @@ use Slam\PhpSpreadsheetHelper\Table;
 
 final class TableTest extends TestCase
 {
-    private const EXCEL_DATA = ['a', 'b'];
+    private const EXCEL_DATA = [['col' => 'a'], ['col' => 'b']];
     private Spreadsheet $phpExcel;
     private Worksheet $activeSheet;
     private Table $table;
@@ -72,7 +72,7 @@ final class TableTest extends TestCase
         $this->table->setFreezePanes(false);
         self::assertFalse($this->table->getFreezePanes());
 
-        self::assertNull($this->table->getWrittenColumnTitles());
+        self::assertEmpty($this->table->getWrittenColumnTitles());
         $columns = [
             'column_1' => 'Name',
             'column_2' => 'Surname',

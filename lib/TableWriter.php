@@ -71,9 +71,11 @@ final class TableWriter
         foreach ($tables as $table) {
             $index = 0;
             foreach ($table->getColumnCollection() as $column) {
+                $dataRowStart = $table->getDataRowStart();
+                \assert(null !== $dataRowStart);
                 $column->getCellStyle()->styleCell($table->getActiveSheet()->getStyleByColumnAndRow(
                     $index + $table->getColumnStart(),
-                    $table->getDataRowStart(),
+                    $dataRowStart,
                     $index + $table->getColumnStart(),
                     $table->getRowEnd()
                 ));
@@ -119,6 +121,9 @@ final class TableWriter
         $table->incrementRow();
     }
 
+    /**
+     * @param array<string, null|float|int|string> $row
+     */
     private function writeColumnsHeading(Table $table, array $row): void
     {
         $columnCollection = $table->getColumnCollection();
@@ -147,6 +152,9 @@ final class TableWriter
         $table->flagDataRowStart();
     }
 
+    /**
+     * @param array<string, null|float|int|string> $row
+     */
     private function writeRow(Table $table, array $row, ?string $type = null): void
     {
         $table->resetColumn();
@@ -157,7 +165,11 @@ final class TableWriter
             $dataType = DataType::TYPE_STRING;
             if (null === $content) {
                 $dataType = DataType::TYPE_NULL;
-            } elseif ('title' !== $type && 0 !== ($columnCollection = $table->getColumnCollection())->count()) {
+            } elseif (
+                'title' !== $type
+                && 0 !== ($columnCollection = $table->getColumnCollection())->count()
+                && isset($columnCollection[$key])
+            ) {
                 $dataType = $columnCollection[$key]->getCellStyle()->getDataType();
             }
 
@@ -179,7 +191,7 @@ final class TableWriter
     }
 
     /**
-     * @param mixed $value
+     * @param null|float|int|string $value
      */
     private function sanitize($value): ?string
     {
