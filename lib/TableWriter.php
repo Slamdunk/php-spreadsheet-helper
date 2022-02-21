@@ -9,9 +9,9 @@ use PhpOffice\PhpSpreadsheet\Cell\DataType;
 final class TableWriter
 {
     private const SANITIZE_MAP = [
-        '&amp;' => '&',
-        '&lt;' => '<',
-        '&gt;' => '>',
+        '&amp;'  => '&',
+        '&lt;'   => '<',
+        '&gt;'   => '>',
         '&apos;' => '\'',
         '&quot;' => '"',
     ];
@@ -19,8 +19,7 @@ final class TableWriter
     public function __construct(
         private int $rowsPerSheet = 262144,
         private string $emptyTableMessage = ''
-    )
-    {
+    ) {
 //        $this->setCustomColor(self::GREY_MEDIUM,    0xCC, 0xCC, 0xCC);
 //        $this->setCustomColor(self::GREY_LIGHT,     0xE8, 0xE8, 0xE8);
     }
@@ -154,7 +153,7 @@ final class TableWriter
         $sheet = $table->getActiveSheet();
 
         foreach ($row as $key => $content) {
-            $content = $this->sanitize($content);
+            $content  = $this->sanitize($content);
             $dataType = DataType::TYPE_STRING;
             if (null === $content) {
                 $dataType = DataType::TYPE_NULL;
@@ -188,12 +187,10 @@ final class TableWriter
             return null;
         }
 
-        $value = \str_replace(
+        return \str_replace(
             \array_keys(self::SANITIZE_MAP),
             \array_values(self::SANITIZE_MAP),
             (string) $value
         );
-
-        return $value;
     }
 }

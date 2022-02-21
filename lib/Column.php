@@ -7,10 +7,11 @@ namespace Slam\PhpSpreadsheetHelper;
 final class Column implements ColumnInterface
 {
     public function __construct(
-        private string             $key,
-        private string             $heading,
-        private int                $width,
-        private CellStyleInterface $cellStyle)
+        private string $key,
+        private string $heading,
+        private int $width,
+        private CellStyleInterface $cellStyle
+    )
     {
     }
 

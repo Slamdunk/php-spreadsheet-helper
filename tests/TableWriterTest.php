@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace Slam\PhpSpreadsheetHelper\Tests;
 
-use ArrayIterator;
 use PhpOffice\PhpSpreadsheet;
 use PHPUnit\Framework\TestCase;
-use Slam\PhpSpreadsheetHelper\Column;
 use Slam\PhpSpreadsheetHelper\CellStyle;
+use Slam\PhpSpreadsheetHelper\Column;
 use Slam\PhpSpreadsheetHelper\ColumnCollection;
 use Slam\PhpSpreadsheetHelper\Table;
 use Slam\PhpSpreadsheetHelper\TableWriter;
@@ -17,19 +16,18 @@ final class TableWriterTest extends TestCase
 {
     private function writeAndRead(PhpSpreadsheet\Spreadsheet $source): PhpSpreadsheet\Spreadsheet
     {
-        $filename = __DIR__.'/tmp/test.xlsx';
-        @unlink($filename);
+        $filename = __DIR__ . '/tmp/test.xlsx';
+        @\unlink($filename);
         (new PhpSpreadsheet\Writer\Xlsx($source))->save($filename);
-        $dest = (new PhpSpreadsheet\Reader\Xlsx())->load($filename);
 
-        return $dest;
+        return (new PhpSpreadsheet\Reader\Xlsx())->load($filename);
     }
 
     public function testPostGenerationDetails(): void
     {
-        $source = new PhpSpreadsheet\Spreadsheet();
+        $source  = new PhpSpreadsheet\Spreadsheet();
         $heading = \uniqid('Heading_');
-        $table  = new Table($source->getActiveSheet(), 3, 4, $heading, [
+        $table   = new Table($source->getActiveSheet(), 3, 4, $heading, [
             ['description' => 'AAA'],
             ['description' => 'BBB'],
         ]);
@@ -48,7 +46,7 @@ final class TableWriterTest extends TestCase
         self::assertSame(['description' => 'Description'], $table->getWrittenColumnTitles());
 
         $sheet = $this->writeAndRead($source)->getActiveSheet();
-        
+
         self::assertSame($heading, $sheet->getCellByColumnAndRow(4, 3)->getValue());
         self::assertSame('Description', $sheet->getCellByColumnAndRow(4, 4)->getValue());
         self::assertSame('AAA', $sheet->getCellByColumnAndRow(4, 5)->getValue());
@@ -71,9 +69,9 @@ final class TableWriterTest extends TestCase
         $heading = \sprintf('%s: %s', \uniqid('Heading_'), $textWithSpecialCharacters);
         $data    = \sprintf('%s: %s', \uniqid('Data_'), $textWithSpecialCharacters);
 
-        $source = new PhpSpreadsheet\Spreadsheet();
+        $source      = new PhpSpreadsheet\Spreadsheet();
         $sourceSheet = $source->getActiveSheet();
-        $table  = new Table($sourceSheet, 1, 1, $heading, [
+        $table       = new Table($sourceSheet, 1, 1, $heading, [
             ['description' => $data],
         ]);
 
@@ -139,14 +137,14 @@ final class TableWriterTest extends TestCase
             'D4' => 42796.0,
             'E4' => 1234567.89,
             'F4' => 'AABB',
-            'G4' => NULL,
+            'G4' => null,
         ];
 
         $actual = [];
         foreach ($expected as $cell => $content) {
             $actual[$cell] = $firstSheet->getCell($cell)->getValue();
         }
-        
+
         self::assertSame($expected, $actual);
     }
 
@@ -164,8 +162,8 @@ final class TableWriterTest extends TestCase
             ['description' => 'EEE'],
         ]);
 
-        $tables = (new TableWriter(6))->writeTableToWorksheet($table);
-        $sheets = $this->writeAndRead($source)->getAllSheets();
+        $tables     = (new TableWriter(6))->writeTableToWorksheet($table);
+        $sheets     = $this->writeAndRead($source)->getAllSheets();
         $firstSheet = $sheets[0];
 
         $expected   = [
@@ -207,7 +205,7 @@ final class TableWriterTest extends TestCase
     public function testEmptyTable(): void
     {
         $emptyTableMessage = \uniqid('no_data_');
-        $source = new PhpSpreadsheet\Spreadsheet();
+        $source            = new PhpSpreadsheet\Spreadsheet();
 
         $table = new Table($source->getActiveSheet(), 1, 1, \uniqid(), []);
 
@@ -232,7 +230,7 @@ final class TableWriterTest extends TestCase
     public function testFontRowAttributesUsage(): void
     {
         $source = new PhpSpreadsheet\Spreadsheet();
-        $table = new Table($source->getActiveSheet(), 1, 1, \uniqid(), [
+        $table  = new Table($source->getActiveSheet(), 1, 1, \uniqid(), [
             [
                 'name'    => 'Foo',
                 'surname' => 'Bar',

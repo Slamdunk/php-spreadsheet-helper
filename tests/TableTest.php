@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Slam\PhpSpreadsheetHelper\Tests;
 
-use ArrayIterator;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PHPUnit\Framework\TestCase;
@@ -22,7 +21,7 @@ final class TableTest extends TestCase
     {
         $this->phpExcel    = new Spreadsheet();
         $this->activeSheet = new Worksheet($this->phpExcel, 'sheet 1');
-        $this->table = new Table(
+        $this->table       = new Table(
             $this->activeSheet,
             3,
             12,

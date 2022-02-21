@@ -7,7 +7,6 @@ namespace Slam\PhpSpreadsheetHelper\CellStyle;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Style\Style;
 use Slam\PhpSpreadsheetHelper\CellStyleInterface;
-use Slam\Excel\Pear\Writer\Format;
 
 final class Amount implements CellStyleInterface
 {

@@ -8,7 +8,6 @@ use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Style;
 use Slam\PhpSpreadsheetHelper\CellStyleInterface;
-use Slam\Excel\Pear\Writer\Format;
 
 final class Text implements CellStyleInterface
 {

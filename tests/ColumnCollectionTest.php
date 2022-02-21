@@ -8,7 +8,6 @@ use PHPUnit\Framework\TestCase;
 use Slam\PhpSpreadsheetHelper\CellStyle\Text;
 use Slam\PhpSpreadsheetHelper\Column;
 use Slam\PhpSpreadsheetHelper\ColumnCollection;
-use Slam\PhpSpreadsheetHelper\Exception;
 
 final class ColumnCollectionTest extends TestCase
 {
@@ -17,7 +16,7 @@ final class ColumnCollectionTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->column = new Column('foo', 'Foo', 10, new Text());
+        $this->column     = new Column('foo', 'Foo', 10, new Text());
         $this->collection = new ColumnCollection(...[$this->column]);
     }
 

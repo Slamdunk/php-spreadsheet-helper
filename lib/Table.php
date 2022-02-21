@@ -46,7 +46,7 @@ final class Table implements Countable
         $this->heading = $heading;
 
         $this->data = $data;
-        
+
         $this->columnCollection = new ColumnCollection();
     }
 
