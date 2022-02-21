@@ -16,9 +16,9 @@ use Slam\PhpSpreadsheetHelper as ExcelHelper;
 
 require __DIR__ . '/vendor/autoload.php';
 
-// Being an iterable, the data can be any dinamically generated content
+// Being an `iterable`, the data can be any dinamically generated content
 // for example a PDOStatement set on unbuffered query
-$users = new ArrayIterator([
+$users = [
     [
         'column_1' => 'John',
         'column_2' => '123.45',
@@ -29,24 +29,21 @@ $users = new ArrayIterator([
         'column_2' => '4321.09',
         'column_3' => '2018-05-08',
     ],
-]);
+];
 
-$columnCollection = new ExcelHelper\ColumnCollection([
+$columnCollection = new ExcelHelper\ColumnCollection(...[
     new ExcelHelper\Column('column_1',  'User',     10,     new ExcelHelper\CellStyle\Text()),
     new ExcelHelper\Column('column_2',  'Amount',   15,     new ExcelHelper\CellStyle\Amount()),
     new ExcelHelper\Column('column_3',  'Date',     15,     new ExcelHelper\CellStyle\Date()),
 ]);
 
-$filename = sprintf('%s/my_excel_%s.xls', __DIR__, uniqid());
+$spreadsheet = new PhpSpreadsheet\Spreadsheet();
 
-$phpExcel = new ExcelHelper\TableWriter($filename);
-$worksheet = $phpExcel->addWorksheet('My Users');
-
-$table = new ExcelHelper\Table($worksheet, 0, 0, 'My Heading', $users);
+$table = new ExcelHelper\Table($spreadsheet->getActiveSheet(), 1, 1, 'My Heading', $users);
 $table->setColumnCollection($columnCollection);
 
-$phpExcel->writeTableToWorksheet($table);
-$phpExcel->close();
+(new TableWriter())->writeTableToWorksheet($table);
+(new PhpSpreadsheet\Writer\Xlsx($spreadsheet))->save(__DIR__.'/test.xlsx');
 ```
 
 Result:

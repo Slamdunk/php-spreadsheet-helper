@@ -17,8 +17,8 @@ final class TableWriter
     ];
 
     public function __construct(
-        private int $rowsPerSheet = 262144,
-        private string $emptyTableMessage = ''
+        private string $emptyTableMessage = '',
+        private int $rowsPerSheet = 262144
     ) {
 //        $this->setCustomColor(self::GREY_MEDIUM,    0xCC, 0xCC, 0xCC);
 //        $this->setCustomColor(self::GREY_LIGHT,     0xE8, 0xE8, 0xE8);

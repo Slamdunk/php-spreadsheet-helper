@@ -162,7 +162,7 @@ final class TableWriterTest extends TestCase
             ['description' => 'EEE'],
         ]);
 
-        $tables     = (new TableWriter(6))->writeTableToWorksheet($table);
+        $tables     = (new TableWriter('', 6))->writeTableToWorksheet($table);
         $sheets     = $this->writeAndRead($source)->getAllSheets();
         $firstSheet = $sheets[0];
 
@@ -209,7 +209,7 @@ final class TableWriterTest extends TestCase
 
         $table = new Table($source->getActiveSheet(), 1, 1, \uniqid(), []);
 
-        (new TableWriter(1, $emptyTableMessage))->writeTableToWorksheet($table);
+        (new TableWriter($emptyTableMessage))->writeTableToWorksheet($table);
         $firstSheet = $this->writeAndRead($source)->getActiveSheet();
 
         $expected   = [
