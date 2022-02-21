@@ -5,9 +5,18 @@ declare(strict_types=1);
 namespace Slam\PhpSpreadsheetHelper;
 
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Conditional;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 
 final class TableWriter
 {
+    public const COLOR_HEADER_FONT = 'FFFFFF';
+    public const COLOR_HEADER_FILL = '4472C4';
+    public const COLOR_ODD_FILL    = 'D9E1F2';
+    public const COLOR_ODD_BORDER  = '8EA9DB';
+
     private const SANITIZE_MAP = [
         '&amp;'  => '&',
         '&lt;'   => '<',
@@ -20,8 +29,6 @@ final class TableWriter
         private string $emptyTableMessage = '',
         private int $rowsPerSheet = 262144
     ) {
-//        $this->setCustomColor(self::GREY_MEDIUM,    0xCC, 0xCC, 0xCC);
-//        $this->setCustomColor(self::GREY_LIGHT,     0xE8, 0xE8, 0xE8);
     }
 
     /**
@@ -89,7 +96,24 @@ final class TableWriter
             }
         }
 
-        if (0 === $count) {
+        if (0 !== $count) {
+            $conditional = $this->getZebraStripingStyle();
+            foreach ($tables as $table) {
+                $activeSheet = $table->getActiveSheet();
+                $activeSheet->setAutoFilterByColumnAndRow(
+                    $table->getColumnStart(),
+                    $table->getDataRowStart() - 1,
+                    $table->getColumnEnd(),
+                    $table->getRowEnd()
+                );
+                $activeSheet->getStyleByColumnAndRow(
+                    $table->getColumnStart(),
+                    $table->getDataRowStart(),
+                    $table->getColumnEnd(),
+                    $table->getRowEnd()
+                )->setConditionalStyles([$conditional]);
+            }
+        } else {
             $table->incrementRow();
             $table->getActiveSheet()->setCellValueExplicitByColumnAndRow(
                 $table->getColumnCurrent(),
@@ -118,6 +142,14 @@ final class TableWriter
             $this->sanitize($table->getHeading()),
             DataType::TYPE_STRING
         );
+
+        $headingStyle = $table->getActiveSheet()->getStyleByColumnAndRow(
+            $table->getColumnCurrent(),
+            $table->getRowCurrent()
+        );
+        $headingStyle->getAlignment()->setWrapText(false);
+        $headingStyle->getFont()->setSize($table->getFontSize() + 2);
+
         $table->incrementRow();
     }
 
@@ -187,6 +219,23 @@ final class TableWriter
             $sheet->getRowDimension($table->getRowCurrent())->setRowHeight($rowHeight);
         }
 
+        if ('title' === $type) {
+            $headingStyle = $sheet->getStyleByColumnAndRow(
+                $table->getColumnStart(),
+                $table->getRowCurrent(),
+                $table->getColumnEnd(),
+                $table->getRowCurrent(),
+            );
+            $headingStyle->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $font = $headingStyle->getFont();
+            $font->getColor()->setARGB(self::COLOR_HEADER_FONT);
+            $font->setBold(true);
+            $fill = $headingStyle->getFill();
+            $fill->setFillType(Fill::FILL_SOLID);
+            $fill->getStartColor()->setARGB(self::COLOR_HEADER_FILL);
+            $fill->getEndColor()->setARGB(self::COLOR_HEADER_FILL);
+        }
+
         $table->incrementRow();
     }
 
@@ -204,5 +253,26 @@ final class TableWriter
             \array_values(self::SANITIZE_MAP),
             (string) $value
         );
+    }
+
+    private function getZebraStripingStyle(): Conditional
+    {
+        $conditional = new Conditional();
+        $conditional->setConditionType(Conditional::CONDITION_EXPRESSION);
+        $conditional->setOperatorType(Conditional::OPERATOR_EQUAL);
+        $conditional->addCondition('MOD(ROW(),2)=0');
+        $style = $conditional->getStyle();
+        $fill  = $style->getFill();
+        $fill->setFillType(Fill::FILL_SOLID);
+        $fill->getStartColor()->setARGB(self::COLOR_ODD_FILL);
+        $fill->getEndColor()->setARGB(self::COLOR_ODD_FILL);
+        $bottom = $style->getBorders()->getBottom();
+        $bottom->setBorderStyle(Border::BORDER_THIN);
+        $bottom->getColor()->setARGB(self::COLOR_ODD_BORDER);
+        $top = $style->getBorders()->getTop();
+        $top->setBorderStyle(Border::BORDER_THIN);
+        $top->getColor()->setARGB(self::COLOR_ODD_BORDER);
+
+        return $conditional;
     }
 }

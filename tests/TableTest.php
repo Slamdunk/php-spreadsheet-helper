@@ -36,8 +36,6 @@ final class TableTest extends TestCase
         self::assertSame('My Heading', $this->table->getHeading());
         self::assertSame(self::EXCEL_DATA, $this->table->getData());
 
-        self::assertNull($this->table->getDataRowStart());
-
         $this->table->incrementRow();
         $this->table->flagDataRowStart();
         $this->table->incrementRow();
@@ -51,13 +49,13 @@ final class TableTest extends TestCase
         $this->table->incrementColumn();
 
         self::assertSame(12, $this->table->getColumnStart());
-        self::assertSame(14, $this->table->getColumnEnd());
+        self::assertSame(13, $this->table->getColumnEnd());
         self::assertSame(14, $this->table->getColumnCurrent());
 
         $this->table->resetColumn();
 
         self::assertSame(12, $this->table->getColumnStart());
-        self::assertSame(14, $this->table->getColumnEnd());
+        self::assertSame(13, $this->table->getColumnEnd());
         self::assertSame(12, $this->table->getColumnCurrent());
 
         $this->table->setCount(0);
@@ -110,7 +108,7 @@ final class TableTest extends TestCase
 
     public function testFontRowAttributes(): void
     {
-        self::assertSame(8, $this->table->getFontSize());
+        self::assertSame(10, $this->table->getFontSize());
         self::assertNull($this->table->getRowHeight());
         self::assertFalse($this->table->getTextWrap());
 

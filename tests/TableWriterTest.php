@@ -40,7 +40,7 @@ final class TableWriterTest extends TestCase
         self::assertSame(5, $table->getDataRowStart());
 
         self::assertSame(4, $table->getColumnStart());
-        self::assertSame(5, $table->getColumnEnd());
+        self::assertSame(4, $table->getColumnEnd());
 
         self::assertCount(2, $table);
         self::assertSame(['description' => 'Description'], $table->getWrittenColumnTitles());

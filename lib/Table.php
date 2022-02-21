@@ -25,7 +25,7 @@ final class Table implements Countable
     private iterable $data;
     private ColumnCollection $columnCollection;
     private bool $freezePanes = true;
-    private int $fontSize     = 8;
+    private int $fontSize     = 10;
     private ?int $rowHeight   = null;
     private bool $textWrap    = false;
 
@@ -66,8 +66,10 @@ final class Table implements Countable
         return $this->activeSheet;
     }
 
-    public function getDataRowStart(): ?int
+    public function getDataRowStart(): int
     {
+        \assert(null !== $this->dataRowStart);
+
         return $this->dataRowStart;
     }
 
@@ -117,7 +119,7 @@ final class Table implements Countable
     {
         ++$this->columnCurrent;
 
-        $this->columnEnd = \max($this->columnEnd, $this->columnCurrent);
+        $this->columnEnd = \max($this->columnEnd, $this->columnCurrent - 1);
     }
 
     public function resetColumn(): void
