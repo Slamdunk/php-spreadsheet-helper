@@ -95,13 +95,13 @@ final class TableWriterTest extends TestCase
     {
         $source = new PhpSpreadsheet\Spreadsheet();
 
-        $columnCollection = new ColumnCollection([
+        $columnCollection = new ColumnCollection(...[
             new Column('my_text', 'Foo1', 11, new CellStyle\Text()),
             new Column('my_perc', 'Foo2', 12, new CellStyle\Percentage()),
             new Column('my_inte', 'Foo3', 13, new CellStyle\Integer()),
             new Column('my_date', 'Foo4', 14, new CellStyle\Date()),
             new Column('my_amnt', 'Foo5', 15, new CellStyle\Amount()),
-            new Column('my_itfc', 'Foo6', 16, new CellStyle\ItalianFiscalCode()),
+            new Column('my_itfc', 'Foo6', 16, new CellStyle\Text()),
             new Column('my_nodd', 'Foo7', 14, new CellStyle\Date()),
         ]);
 
@@ -136,7 +136,7 @@ final class TableWriterTest extends TestCase
             'A4' => 'text',
             'B4' => 3.45,
             'C4' => 1234567.8,
-            'D4' => 42796,
+            'D4' => 42796.0,
             'E4' => 1234567.89,
             'F4' => 'AABB',
             'G4' => NULL,
@@ -152,26 +152,22 @@ final class TableWriterTest extends TestCase
 
     public function testTablePagination(): void
     {
-        $phpExcel = new Excel\Helper\TableWorkbook($this->filename);
-        $phpExcel->setRowsPerSheet(6);
+        $source = new PhpSpreadsheet\Spreadsheet();
 
-        $activeSheet = $phpExcel->addWorksheet('names');
-        $table       = new Excel\Helper\Table($activeSheet, 1, 2, \uniqid(), new ArrayIterator([
+        $worksheet = $source->getActiveSheet();
+        $worksheet->setTitle('names');
+        $table = new Table($worksheet, 2, 3, \uniqid('Heading_'), [
             ['description' => 'AAA'],
             ['description' => 'BBB'],
             ['description' => 'CCC'],
             ['description' => 'DDD'],
             ['description' => 'EEE'],
-        ]));
+        ]);
 
-        $returnTable = $phpExcel->writeTable($table);
-        $phpExcel->close();
+        $tables = (new TableWriter(6))->writeTableToWorksheet($table);
+        $sheets = $this->writeAndRead($source)->getAllSheets();
+        $firstSheet = $sheets[0];
 
-        unset($phpExcel);
-
-        $phpExcel = $this->getPhpExcelFromFile($this->filename);
-
-        $firstSheet = $phpExcel->getSheet(0);
         $expected   = [
             'C1' => null,
             'C2' => $table->getHeading(),
@@ -182,22 +178,27 @@ final class TableWriterTest extends TestCase
             'C7' => null,
         ];
 
+        $actual = [];
         foreach ($expected as $cell => $content) {
-            self::assertSame($content, $firstSheet->getCell($cell)->getValue());
+            $actual[$cell] = $firstSheet->getCell($cell)->getValue();
         }
+        self::assertSame($expected, $actual);
 
-        $secondSheet = $phpExcel->getSheet(1);
+        $secondSheet = $sheets[1];
         $expected    = [
-            'C1' => $returnTable->getHeading(),
-            'C2' => 'Description',
-            'C3' => 'DDD',
-            'C4' => 'EEE',
-            'C5' => null,
+            'C1' => null,
+            'C2' => $tables[1]->getHeading(),
+            'C3' => 'Description',
+            'C4' => 'DDD',
+            'C5' => 'EEE',
+            'C6' => null,
         ];
 
+        $actual = [];
         foreach ($expected as $cell => $content) {
-            self::assertSame($content, $secondSheet->getCell($cell)->getValue());
+            $actual[$cell] = $secondSheet->getCell($cell)->getValue();
         }
+        self::assertSame($expected, $actual);
 
         self::assertStringContainsString('names (', $firstSheet->getTitle());
         self::assertStringContainsString('names (', $secondSheet->getTitle());
@@ -206,21 +207,13 @@ final class TableWriterTest extends TestCase
     public function testEmptyTable(): void
     {
         $emptyTableMessage = \uniqid('no_data_');
+        $source = new PhpSpreadsheet\Spreadsheet();
 
-        $phpExcel = new Excel\Helper\TableWorkbook($this->filename);
-        $phpExcel->setEmptyTableMessage($emptyTableMessage);
+        $table = new Table($source->getActiveSheet(), 1, 1, \uniqid(), []);
 
-        $activeSheet = $phpExcel->addWorksheet(\uniqid());
-        $table       = new Excel\Helper\Table($activeSheet, 0, 0, \uniqid(), new ArrayIterator([]));
+        (new TableWriter(1, $emptyTableMessage))->writeTableToWorksheet($table);
+        $firstSheet = $this->writeAndRead($source)->getActiveSheet();
 
-        $phpExcel->writeTable($table);
-        $phpExcel->close();
-
-        unset($phpExcel);
-
-        $phpExcel = $this->getPhpExcelFromFile($this->filename);
-
-        $firstSheet = $phpExcel->getSheet(0);
         $expected   = [
             'A1' => $table->getHeading(),
             'A2' => null,
@@ -228,16 +221,18 @@ final class TableWriterTest extends TestCase
             'A4' => null,
         ];
 
+        $actual = [];
         foreach ($expected as $cell => $content) {
-            self::assertSame($content, $firstSheet->getCell($cell)->getValue());
+            $actual[$cell] = $firstSheet->getCell($cell)->getValue();
         }
+
+        self::assertSame($expected, $actual);
     }
 
     public function testFontRowAttributesUsage(): void
     {
-        $phpExcel    = new Excel\Helper\TableWorkbook($this->filename);
-        $activeSheet = $phpExcel->addWorksheet(\uniqid());
-        $table       = new Excel\Helper\Table($activeSheet, 0, 0, \uniqid(), new ArrayIterator([
+        $source = new PhpSpreadsheet\Spreadsheet();
+        $table = new Table($source->getActiveSheet(), 1, 1, \uniqid(), [
             [
                 'name'    => 'Foo',
                 'surname' => 'Bar',
@@ -246,20 +241,15 @@ final class TableWriterTest extends TestCase
                 'name'    => 'Baz',
                 'surname' => 'Xxx',
             ],
-        ]));
+        ]);
 
         $table->setFontSize(12);
         $table->setRowHeight(33);
         $table->setTextWrap(true);
 
-        $phpExcel->writeTable($table);
-        $phpExcel->close();
+        (new TableWriter())->writeTableToWorksheet($table);
+        $firstSheet = $this->writeAndRead($source)->getActiveSheet();
 
-        unset($phpExcel);
-
-        $phpExcel = $this->getPhpExcelFromFile($this->filename);
-
-        $firstSheet = $phpExcel->getSheet(0);
         $cell       = $firstSheet->getCell('A3');
         $style      = $cell->getStyle();
 
@@ -267,38 +257,5 @@ final class TableWriterTest extends TestCase
         self::assertSame(12, (int) $style->getFont()->getSize());
         self::assertSame(33, (int) $firstSheet->getRowDimension($cell->getRow())->getRowHeight());
         self::assertTrue($style->getAlignment()->getWrapText());
-    }
-
-    /**
-     * @dataProvider provideColumnStringFromIndexCases
-     */
-    public function testColumnStringFromIndex(int $index, string $columnString): void
-    {
-        self::assertSame($columnString, Excel\Helper\TableWorkbook::getColumnStringFromIndex($index));
-    }
-
-    public function provideColumnStringFromIndexCases(): array
-    {
-        return [
-            [2, 'C'],
-            [3, 'D'],
-            [25, 'Z'],
-            [26, 'AA'],
-            [33, 'AH'],
-            [701, 'ZZ'],
-            [703, 'AAB'],
-        ];
-    }
-
-    public function testColumnStringFromIndexExpectsPositiveValues(): void
-    {
-        $this->expectException(Excel\Exception\InvalidArgumentException::class);
-
-        Excel\Helper\TableWorkbook::getColumnStringFromIndex(-1);
-    }
-
-    private function getPhpExcelFromFile(string $filename): PhpSpreadsheet\Spreadsheet
-    {
-        return PhpSpreadsheet\IOFactory::load($filename);
     }
 }

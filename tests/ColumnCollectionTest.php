@@ -18,26 +18,12 @@ final class ColumnCollectionTest extends TestCase
     protected function setUp(): void
     {
         $this->column = new Column('foo', 'Foo', 10, new Text());
-        $this->collection = new ColumnCollection([$this->column]);
+        $this->collection = new ColumnCollection(...[$this->column]);
     }
 
     public function testBaseFunctionalities(): void
     {
         self::assertArrayHasKey('foo', $this->collection);
         self::assertSame($this->column, $this->collection['foo']);
-    }
-
-    public function testNotEditableOnSet(): void
-    {
-        $this->expectException(Exception\RuntimeException::class);
-
-        $this->collection['foo'] = 1;
-    }
-
-    public function testNotEditableOnUnset(): void
-    {
-        $this->expectException(Exception\RuntimeException::class);
-
-        unset($this->collection['foo']);
     }
 }

@@ -97,9 +97,9 @@ final class TableTest extends TestCase
         self::assertNotSame($this->table, $newTable);
 
         // The starting row must be the first of the new sheet
-        self::assertSame(0, $newTable->getRowStart());
-        self::assertSame(0, $newTable->getRowEnd());
-        self::assertSame(0, $newTable->getRowCurrent());
+        self::assertSame(3, $newTable->getRowStart());
+        self::assertSame(3, $newTable->getRowEnd());
+        self::assertSame(3, $newTable->getRowCurrent());
 
         // The starting column must be the same of the previous sheet
         self::assertSame(12, $newTable->getColumnStart());

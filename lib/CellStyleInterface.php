@@ -8,7 +8,7 @@ use PhpOffice\PhpSpreadsheet\Style\Style;
 
 interface CellStyleInterface
 {
-    public function decorateValue(mixed $value): mixed;
+    public function getDataType(): string;
 
-    public function styleCell(Style $format): void;
+    public function styleCell(Style $style): void;
 }

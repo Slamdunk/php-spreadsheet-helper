@@ -19,7 +19,7 @@ final class Table implements Countable
     private int $columnCurrent;
     private string $heading;
     private iterable $data;
-    private ?ColumnCollectionInterface $columnCollection = null;
+    private ColumnCollection $columnCollection;
     private bool $freezePanes                            = true;
     private int $fontSize                                = 8;
     private ?int $rowHeight                              = null;
@@ -46,6 +46,8 @@ final class Table implements Countable
         $this->heading = $heading;
 
         $this->data = $data;
+        
+        $this->columnCollection = new ColumnCollection();
     }
 
     public function getActiveSheet(): Worksheet
@@ -122,12 +124,12 @@ final class Table implements Countable
         return $this->data;
     }
 
-    public function setColumnCollection(?ColumnCollectionInterface $columnCollection): void
+    public function setColumnCollection(ColumnCollection $columnCollection): void
     {
         $this->columnCollection = $columnCollection;
     }
 
-    public function getColumnCollection(): ?ColumnCollectionInterface
+    public function getColumnCollection(): ColumnCollection
     {
         return $this->columnCollection;
     }
@@ -205,7 +207,7 @@ final class Table implements Countable
     {
         $newTable = new self(
             $this->activeSheet->getParent()->createSheet(),
-            0,
+            $this->getRowStart(),
             $this->getColumnStart(),
             $this->getHeading(),
             $this->getData()

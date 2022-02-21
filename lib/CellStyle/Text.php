@@ -4,19 +4,21 @@ declare(strict_types=1);
 
 namespace Slam\PhpSpreadsheetHelper\CellStyle;
 
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Style;
 use Slam\PhpSpreadsheetHelper\CellStyleInterface;
 use Slam\Excel\Pear\Writer\Format;
 
 final class Text implements CellStyleInterface
 {
-    public function decorateValue(mixed $value): mixed
+    public function getDataType(): string
     {
-        return $value;
+        return DataType::TYPE_STRING;
     }
 
-    public function styleCell(Style $format): void
+    public function styleCell(Style $style): void
     {
-        $format->setAlign('left');
+        $style->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
     }
 }

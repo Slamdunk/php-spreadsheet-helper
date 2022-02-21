@@ -4,19 +4,20 @@ declare(strict_types=1);
 
 namespace Slam\PhpSpreadsheetHelper\CellStyle;
 
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Style\Style;
 use Slam\PhpSpreadsheetHelper\CellStyleInterface;
 use Slam\Excel\Pear\Writer\Format;
 
 final class Amount implements CellStyleInterface
 {
-    public function decorateValue(mixed $value): mixed
+    public function getDataType(): string
     {
-        return $value;
+        return DataType::TYPE_NUMERIC;
     }
 
-    public function styleCell(Style $format): void
+    public function styleCell(Style $style): void
     {
-        $format->setNumFormat('#,##0.00');
+        $style->getNumberFormat()->setFormatCode('#,##0.00');
     }
 }
