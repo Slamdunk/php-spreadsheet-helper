@@ -10,6 +10,8 @@ use Slam\PhpSpreadsheetHelper\CellStyleInterface;
 
 final class Amount implements CellStyleInterface
 {
+    public const FORMATCODE = '#,##0.00';
+
     public function getDataType(): string
     {
         return DataType::TYPE_NUMERIC;
@@ -17,6 +19,6 @@ final class Amount implements CellStyleInterface
 
     public function styleCell(Style $style): void
     {
-        $style->getNumberFormat()->setFormatCode('#,##0.00');
+        $style->getNumberFormat()->setFormatCode(self::FORMATCODE);
     }
 }

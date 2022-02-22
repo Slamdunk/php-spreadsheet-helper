@@ -30,9 +30,9 @@ final class Table implements Countable
     private bool $textWrap    = false;
 
     /**
-     * @var array<string, string>
+     * @var array<int, string>
      */
-    private array $writtenColumnTitles = [];
+    private array $writtenColumn       = [];
     private ?int $count                = null;
 
     /**
@@ -191,19 +191,19 @@ final class Table implements Countable
     }
 
     /**
-     * @param array<string, string> $writtenColumnTitles
+     * @param array<int, string> $writtenColumn
      */
-    public function setWrittenColumnTitles(array $writtenColumnTitles): void
+    public function setWrittenColumn(array $writtenColumn): void
     {
-        $this->writtenColumnTitles = $writtenColumnTitles;
+        $this->writtenColumn = $writtenColumn;
     }
 
     /**
-     * @return array<string, string>
+     * @return array<int, string>
      */
-    public function getWrittenColumnTitles(): array
+    public function getWrittenColumn(): array
     {
-        return $this->writtenColumnTitles;
+        return $this->writtenColumn;
     }
 
     public function setCount(int $count): void

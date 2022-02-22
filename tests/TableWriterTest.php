@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Slam\PhpSpreadsheetHelper\Tests;
 
 use PhpOffice\PhpSpreadsheet;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use PHPUnit\Framework\TestCase;
 use Slam\PhpSpreadsheetHelper\CellStyle;
 use Slam\PhpSpreadsheetHelper\Column;
@@ -43,7 +45,7 @@ final class TableWriterTest extends TestCase
         self::assertSame(4, $table->getColumnEnd());
 
         self::assertCount(2, $table);
-        self::assertSame(['description' => 'Description'], $table->getWrittenColumnTitles());
+        self::assertSame([4 => 'description'], $table->getWrittenColumn());
 
         $sheet = $this->writeAndRead($source)->getActiveSheet();
 
@@ -94,6 +96,8 @@ final class TableWriterTest extends TestCase
         $source = new PhpSpreadsheet\Spreadsheet();
 
         $columnCollection = new ColumnCollection(...[
+            new Column('disorder', 'Foo8', 11, new CellStyle\Text()),
+
             new Column('my_text', 'Foo1', 11, new CellStyle\Text()),
             new Column('my_perc', 'Foo2', 12, new CellStyle\Percentage()),
             new Column('my_inte', 'Foo3', 13, new CellStyle\Integer()),
@@ -112,6 +116,9 @@ final class TableWriterTest extends TestCase
                 'my_amnt' => 1234567.89,
                 'my_itfc' => 'AABB',
                 'my_nodd' => null,
+
+                'disorder'  => 'disorder',
+                'no_column' => 'no_column',
             ],
         ]);
         $table->setColumnCollection($columnCollection);
@@ -119,7 +126,7 @@ final class TableWriterTest extends TestCase
         (new TableWriter())->writeTableToWorksheet($table);
         $firstSheet = $this->writeAndRead($source)->getActiveSheet();
 
-        $expected   = [
+        $expectedContent = [
             'A1' => null,
             'A2' => $table->getHeading(),
 
@@ -130,6 +137,8 @@ final class TableWriterTest extends TestCase
             'E3' => 'Foo5',
             'F3' => 'Foo6',
             'G3' => 'Foo7',
+            'H3' => 'Foo8',
+            'I3' => 'No Column',
 
             'A4' => 'text',
             'B4' => 3.45,
@@ -138,14 +147,73 @@ final class TableWriterTest extends TestCase
             'E4' => 1234567.89,
             'F4' => 'AABB',
             'G4' => null,
+            'H4' => 'disorder',
+            'I4' => 'no_column',
         ];
 
-        $actual = [];
-        foreach ($expected as $cell => $content) {
-            $actual[$cell] = $firstSheet->getCell($cell)->getValue();
+        $expectedDataType = [
+            'A1' => DataType::TYPE_NULL,
+            'A2' => DataType::TYPE_STRING,
+
+            'A3' => DataType::TYPE_STRING,
+            'B3' => DataType::TYPE_STRING,
+            'C3' => DataType::TYPE_STRING,
+            'D3' => DataType::TYPE_STRING,
+            'E3' => DataType::TYPE_STRING,
+            'F3' => DataType::TYPE_STRING,
+            'G3' => DataType::TYPE_STRING,
+            'H3' => DataType::TYPE_STRING,
+            'I3' => DataType::TYPE_STRING,
+
+            'A4' => DataType::TYPE_STRING,
+            'B4' => DataType::TYPE_NUMERIC,
+            'C4' => DataType::TYPE_NUMERIC,
+            'D4' => DataType::TYPE_NUMERIC,
+            'E4' => DataType::TYPE_NUMERIC,
+            'F4' => DataType::TYPE_STRING,
+            'G4' => DataType::TYPE_NULL,
+            'H4' => DataType::TYPE_STRING,
+            'I4' => DataType::TYPE_STRING,
+        ];
+
+        $expectedNumberFormat = [
+            'A1' => NumberFormat::FORMAT_GENERAL,
+            'A2' => NumberFormat::FORMAT_GENERAL,
+
+            'A3' => NumberFormat::FORMAT_GENERAL,
+            'B3' => NumberFormat::FORMAT_GENERAL,
+            'C3' => NumberFormat::FORMAT_GENERAL,
+            'D3' => NumberFormat::FORMAT_GENERAL,
+            'E3' => NumberFormat::FORMAT_GENERAL,
+            'F3' => NumberFormat::FORMAT_GENERAL,
+            'G3' => NumberFormat::FORMAT_GENERAL,
+            'H3' => NumberFormat::FORMAT_GENERAL,
+            'I3' => NumberFormat::FORMAT_GENERAL,
+
+            'A4' => NumberFormat::FORMAT_GENERAL,
+            'B4' => CellStyle\Percentage::FORMATCODE,
+            'C4' => CellStyle\Integer::FORMATCODE,
+            'D4' => NumberFormat::FORMAT_DATE_DDMMYYYY,
+            'E4' => CellStyle\Amount::FORMATCODE,
+            'F4' => NumberFormat::FORMAT_GENERAL,
+            'G4' => NumberFormat::FORMAT_DATE_DDMMYYYY,
+            'H4' => NumberFormat::FORMAT_GENERAL,
+            'I4' => NumberFormat::FORMAT_GENERAL,
+        ];
+
+        $actualContent      = [];
+        $actualDataType     = [];
+        $actualNumberFormat = [];
+        foreach ($expectedContent as $coordinate => $content) {
+            $cell                            = $firstSheet->getCell($coordinate);
+            $actualContent[$coordinate]      = $cell->getValue();
+            $actualDataType[$coordinate]     = $cell->getDataType();
+            $actualNumberFormat[$coordinate] = $cell->getStyle()->getNumberFormat()->getFormatCode();
         }
 
-        self::assertSame($expected, $actual);
+        self::assertSame($expectedContent, $actualContent);
+        self::assertSame($expectedDataType, $actualDataType);
+        self::assertSame($expectedNumberFormat, $actualNumberFormat);
     }
 
     public function testTablePagination(): void

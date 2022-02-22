@@ -11,6 +11,8 @@ use Slam\PhpSpreadsheetHelper\CellStyleInterface;
 
 final class Integer implements CellStyleInterface
 {
+    public const FORMATCODE = '#,##0';
+
     public function getDataType(): string
     {
         return DataType::TYPE_NUMERIC;
@@ -19,6 +21,6 @@ final class Integer implements CellStyleInterface
     public function styleCell(Style $style): void
     {
         $style->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        $style->getNumberFormat()->setFormatCode('#,##0');
+        $style->getNumberFormat()->setFormatCode(self::FORMATCODE);
     }
 }

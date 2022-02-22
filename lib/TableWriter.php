@@ -17,6 +17,8 @@ final class TableWriter
     public const COLOR_ODD_FILL    = 'D9E1F2';
     public const COLOR_ODD_BORDER  = '8EA9DB';
 
+    public const COLUMN_DEFAULT_WIDTH = 10;
+
     private const SANITIZE_MAP = [
         '&amp;'  => '&',
         '&lt;'   => '<',
@@ -76,17 +78,20 @@ final class TableWriter
         }
 
         foreach ($tables as $table) {
-            $index = 0;
-            foreach ($table->getColumnCollection() as $column) {
+            $columnCollection = $table->getColumnCollection();
+            foreach ($table->getWrittenColumn() as $columnIndex => $columnKey) {
+                if (! isset($columnCollection[$columnKey])) {
+                    continue;
+                }
+
                 $dataRowStart = $table->getDataRowStart();
                 \assert(null !== $dataRowStart);
-                $column->getCellStyle()->styleCell($table->getActiveSheet()->getStyleByColumnAndRow(
-                    $index + $table->getColumnStart(),
+                $columnCollection[$columnKey]->getCellStyle()->styleCell($table->getActiveSheet()->getStyleByColumnAndRow(
+                    $columnIndex,
                     $dataRowStart,
-                    $index + $table->getColumnStart(),
+                    $columnIndex,
                     $table->getRowEnd()
                 ));
-                ++$index;
             }
         }
 
@@ -162,25 +167,27 @@ final class TableWriter
         $columnKeys       = \array_keys($row);
 
         $table->resetColumn();
-        $titles = [];
-        foreach ($columnKeys as $title) {
-            $width    = 10;
-            $newTitle = \ucwords(\str_replace('_', ' ', $title));
+        $writtenColumn = [];
+        $titles        = [];
+        foreach ($columnKeys as $columnKey) {
+            $width    = self::COLUMN_DEFAULT_WIDTH;
+            $newTitle = \ucwords(\str_replace('_', ' ', $columnKey));
 
-            if (0 !== $columnCollection->count() && null !== ($column = $columnCollection[$title])) {
+            if (null !== ($column = $columnCollection[$columnKey] ?? null)) {
                 $width    = $column->getWidth();
                 $newTitle = $column->getHeading();
             }
 
             $table->getActiveSheet()->getColumnDimensionByColumn($table->getColumnCurrent())->setWidth($width);
-            $titles[$title] = $newTitle;
+            $writtenColumn[$table->getColumnCurrent()] = $columnKey;
+            $titles[$columnKey]                        = $newTitle;
 
             $table->incrementColumn();
         }
 
         $this->writeRow($table, $titles, 'title');
 
-        $table->setWrittenColumnTitles($titles);
+        $table->setWrittenColumn($writtenColumn);
         $table->flagDataRowStart();
     }
 

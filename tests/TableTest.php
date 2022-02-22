@@ -70,13 +70,13 @@ final class TableTest extends TestCase
         $this->table->setFreezePanes(false);
         self::assertFalse($this->table->getFreezePanes());
 
-        self::assertEmpty($this->table->getWrittenColumnTitles());
+        self::assertEmpty($this->table->getWrittenColumn());
         $columns = [
-            'column_1' => 'Name',
-            'column_2' => 'Surname',
+            2 => 'column_1',
+            3 => 'column_2',
         ];
-        $this->table->setWrittenColumnTitles($columns);
-        self::assertSame($columns, $this->table->getWrittenColumnTitles());
+        $this->table->setWrittenColumn($columns);
+        self::assertSame($columns, $this->table->getWrittenColumn());
     }
 
     public function testTableCountMustBeSet(): void

@@ -10,6 +10,8 @@ use Slam\PhpSpreadsheetHelper\CellStyleInterface;
 
 final class Percentage implements CellStyleInterface
 {
+    public const FORMATCODE = '#,##0.000';
+
     public function getDataType(): string
     {
         return DataType::TYPE_NUMERIC;
@@ -17,6 +19,6 @@ final class Percentage implements CellStyleInterface
 
     public function styleCell(Style $style): void
     {
-        $style->getNumberFormat()->setFormatCode('#,##0.000');
+        $style->getNumberFormat()->setFormatCode(self::FORMATCODE);
     }
 }
