@@ -57,7 +57,7 @@ final class TableWriter
                 $headingRow = false;
             }
 
-            $this->writeRow($table, $row);
+            $this->writeRow($table, $row, false);
         }
 
         if (\count($tables) > 1) {
@@ -183,7 +183,7 @@ final class TableWriter
             $table->incrementColumn();
         }
 
-        $this->writeRow($table, $titles, 'title');
+        $this->writeRow($table, $titles, true);
 
         $table->setWrittenColumn($writtenColumn);
         $table->flagDataRowStart();
@@ -192,7 +192,7 @@ final class TableWriter
     /**
      * @param array<string, null|float|int|string> $row
      */
-    private function writeRow(Table $table, array $row, ?string $type = null): void
+    private function writeRow(Table $table, array $row, bool $isTitle): void
     {
         $table->resetColumn();
         $sheet = $table->getActiveSheet();
@@ -203,7 +203,7 @@ final class TableWriter
             if (null === $content) {
                 $dataType = DataType::TYPE_NULL;
             } elseif (
-                'title' !== $type
+                ! $isTitle
                 && 0 !== ($columnCollection = $table->getColumnCollection())->count()
                 && isset($columnCollection[$key])
             ) {
@@ -224,18 +224,21 @@ final class TableWriter
             $sheet->getRowDimension($table->getRowCurrent())->setRowHeight($rowHeight);
         }
 
-        if ('title' === $type) {
-            $headingStyle = $sheet->getStyleByColumnAndRow(
+        if ($isTitle) {
+            $titleStyle = $sheet->getStyleByColumnAndRow(
                 $table->getColumnStart(),
                 $table->getRowCurrent(),
                 $table->getColumnEnd(),
                 $table->getRowCurrent(),
             );
-            $headingStyle->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-            $font = $headingStyle->getFont();
+            $alignment = $titleStyle->getAlignment();
+            $alignment->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $alignment->setVertical(Alignment::VERTICAL_CENTER);
+            $alignment->setWrapText(true);
+            $font = $titleStyle->getFont();
             $font->getColor()->setARGB(self::COLOR_HEADER_FONT);
             $font->setBold(true);
-            $fill = $headingStyle->getFill();
+            $fill = $titleStyle->getFill();
             $fill->setFillType(Fill::FILL_SOLID);
             $fill->getStartColor()->setARGB(self::COLOR_HEADER_FILL);
             $fill->getEndColor()->setARGB(self::COLOR_HEADER_FILL);
