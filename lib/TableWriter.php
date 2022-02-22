@@ -138,7 +138,7 @@ final class TableWriter
     {
         $defaultStyle = $table->getActiveSheet()->getParent()->getDefaultStyle();
         $defaultStyle->getFont()->setSize($table->getFontSize());
-        $defaultStyle->getAlignment()->setWrapText(true);
+        $defaultStyle->getAlignment()->setWrapText($table->getTextWrap());
 
         $table->resetColumn();
         $table->getActiveSheet()->setCellValueExplicitByColumnAndRow(
