@@ -6,7 +6,6 @@ namespace Slam\PhpSpreadsheetHelper;
 
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
-use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Conditional;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 
@@ -15,7 +14,6 @@ final class TableWriter
     public const COLOR_HEADER_FONT = 'FFFFFF';
     public const COLOR_HEADER_FILL = '4472C4';
     public const COLOR_ODD_FILL    = 'D9E1F2';
-    public const COLOR_ODD_BORDER  = '8EA9DB';
 
     public const COLUMN_DEFAULT_WIDTH = 10;
 
@@ -246,10 +244,7 @@ final class TableWriter
         $table->incrementRow();
     }
 
-    /**
-     * @param null|float|int|string $value
-     */
-    private function sanitize($value): ?string
+    private function sanitize(null|float|int|string $value): ?string
     {
         if (null === $value) {
             return null;
@@ -273,12 +268,6 @@ final class TableWriter
         $fill->setFillType(Fill::FILL_SOLID);
         $fill->getStartColor()->setARGB(self::COLOR_ODD_FILL);
         $fill->getEndColor()->setARGB(self::COLOR_ODD_FILL);
-        $bottom = $style->getBorders()->getBottom();
-        $bottom->setBorderStyle(Border::BORDER_THIN);
-        $bottom->getColor()->setARGB(self::COLOR_ODD_BORDER);
-        $top = $style->getBorders()->getTop();
-        $top->setBorderStyle(Border::BORDER_THIN);
-        $top->getColor()->setARGB(self::COLOR_ODD_BORDER);
 
         return $conditional;
     }
