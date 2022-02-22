@@ -115,6 +115,10 @@ final class TableWriter
                     $table->getColumnEnd(),
                     $table->getRowEnd()
                 )->setConditionalStyles([$conditional]);
+                $activeSheet->setSelectedCellByColumnAndRow(
+                    $table->getColumnStart(),
+                    $table->getDataRowStart()
+                );
             }
         } else {
             $table->incrementRow();
