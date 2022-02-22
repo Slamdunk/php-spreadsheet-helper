@@ -42,7 +42,7 @@ final class TableTest extends TestCase
 
         self::assertSame(3, $this->table->getRowStart());
         self::assertSame(4, $this->table->getDataRowStart());
-        self::assertSame(5, $this->table->getRowEnd());
+        self::assertSame(4, $this->table->getRowEnd());
         self::assertSame(5, $this->table->getRowCurrent());
 
         $this->table->incrementColumn();

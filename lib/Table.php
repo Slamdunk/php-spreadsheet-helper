@@ -95,9 +95,8 @@ final class Table implements Countable
 
     public function incrementRow(): void
     {
-        ++$this->rowCurrent;
-
         $this->rowEnd = \max($this->rowEnd, $this->rowCurrent);
+        ++$this->rowCurrent;
     }
 
     public function getColumnStart(): int
@@ -117,9 +116,8 @@ final class Table implements Countable
 
     public function incrementColumn(): void
     {
+        $this->columnEnd = \max($this->columnEnd, $this->columnCurrent);
         ++$this->columnCurrent;
-
-        $this->columnEnd = \max($this->columnEnd, $this->columnCurrent - 1);
     }
 
     public function resetColumn(): void

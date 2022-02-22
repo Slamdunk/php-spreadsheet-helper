@@ -37,7 +37,7 @@ final class TableWriterTest extends TestCase
         (new TableWriter())->writeTableToWorksheet($table);
 
         self::assertSame(3, $table->getRowStart());
-        self::assertSame(7, $table->getRowEnd());
+        self::assertSame(6, $table->getRowEnd());
 
         self::assertSame(5, $table->getDataRowStart());
 
