@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Slam\PhpSpreadsheetHelper;
 
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\Exception as PhpspreadsheetException;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Conditional;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
@@ -214,12 +215,25 @@ final class TableWriter
                 $dataType = $columnCollection[$key]->getCellStyle()->getDataType();
             }
 
-            $sheet->setCellValueExplicitByColumnAndRow(
-                $table->getColumnCurrent(),
-                $table->getRowCurrent(),
-                $content,
-                $dataType
-            );
+            try {
+                $sheet->setCellValueExplicitByColumnAndRow(
+                    $table->getColumnCurrent(),
+                    $table->getRowCurrent(),
+                    $content,
+                    $dataType
+                );
+            } catch (PhpspreadsheetException $exception) {
+                throw new Exception(
+                    \sprintf(
+                        'Content %s:%s cannot be written as data type %s',
+                        $key,
+                        \var_export($content, true),
+                        \var_export($dataType, true),
+                    ),
+                    0,
+                    $exception
+                );
+            }
 
             $table->incrementColumn();
         }

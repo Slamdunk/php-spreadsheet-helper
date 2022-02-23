@@ -11,6 +11,7 @@ use PHPUnit\Framework\TestCase;
 use Slam\PhpSpreadsheetHelper\CellStyle;
 use Slam\PhpSpreadsheetHelper\Column;
 use Slam\PhpSpreadsheetHelper\ColumnCollection;
+use Slam\PhpSpreadsheetHelper\Exception;
 use Slam\PhpSpreadsheetHelper\Table;
 use Slam\PhpSpreadsheetHelper\TableWriter;
 
@@ -323,5 +324,23 @@ final class TableWriterTest extends TestCase
         self::assertSame(12, (int) $style->getFont()->getSize());
         self::assertSame(33, (int) $firstSheet->getRowDimension($cell->getRow())->getRowHeight());
         self::assertTrue($style->getAlignment()->getWrapText());
+    }
+
+    public function testRaiseSpecificException(): void
+    {
+        $source  = new PhpSpreadsheet\Spreadsheet();
+        $heading = \uniqid('Heading_');
+        $table   = new Table($source->getActiveSheet(), 3, 4, $heading, [
+            ['description' => '123'],
+            ['description' => 'ABC'],
+        ]);
+        $table->setColumnCollection(new ColumnCollection(...[
+            new Column('description', 'Foo', 10, new CellStyle\Integer()),
+        ]));
+
+        $this->expectException(Exception::class);
+        $this->expectErrorMessageMatches('/ABC/');
+
+        (new TableWriter())->writeTableToWorksheet($table);
     }
 }
