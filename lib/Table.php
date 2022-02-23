@@ -212,7 +212,7 @@ final class Table implements Countable
     public function count(): int
     {
         if (null === $this->count) {
-            throw new Exception\RuntimeException('Workbook must set count on table');
+            throw new Exception(\sprintf('%s::setCount() have not been called yet', __CLASS__));
         }
 
         return $this->count;

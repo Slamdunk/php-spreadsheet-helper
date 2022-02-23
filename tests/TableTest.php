@@ -81,7 +81,7 @@ final class TableTest extends TestCase
 
     public function testTableCountMustBeSet(): void
     {
-        $this->expectException(Exception\RuntimeException::class);
+        $this->expectException(Exception::class);
 
         $this->table->count();
     }
