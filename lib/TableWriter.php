@@ -18,14 +18,6 @@ final class TableWriter
 
     public const COLUMN_DEFAULT_WIDTH = 10;
 
-    private const SANITIZE_MAP = [
-        '&amp;'  => '&',
-        '&lt;'   => '<',
-        '&gt;'   => '>',
-        '&apos;' => '\'',
-        '&quot;' => '"',
-    ];
-
     public function __construct(
         private string $emptyTableMessage = '',
         private int $rowsPerSheet = 262144
@@ -147,7 +139,7 @@ final class TableWriter
         $table->getActiveSheet()->setCellValueExplicitByColumnAndRow(
             $table->getColumnCurrent(),
             $table->getRowCurrent(),
-            $this->sanitize($table->getHeading()),
+            $table->getHeading(),
             DataType::TYPE_STRING
         );
 
@@ -203,7 +195,10 @@ final class TableWriter
         $sheet = $table->getActiveSheet();
 
         foreach ($row as $key => $content) {
-            $content  = $this->sanitize($content);
+            $content  = null !== $content
+                ? (string) $content
+                : null
+            ;
             $dataType = DataType::TYPE_STRING;
             if (null === $content) {
                 $dataType = DataType::TYPE_NULL;
@@ -212,7 +207,11 @@ final class TableWriter
                 && 0 !== ($columnCollection = $table->getColumnCollection())->count()
                 && isset($columnCollection[$key])
             ) {
-                $dataType = $columnCollection[$key]->getCellStyle()->getDataType();
+                $cellStyle = $columnCollection[$key]->getCellStyle();
+                $dataType  = $cellStyle->getDataType();
+                if ($cellStyle instanceof ContentDecoratorInterface) {
+                    $content = $cellStyle->decorate($content);
+                }
             }
 
             try {
@@ -263,19 +262,6 @@ final class TableWriter
         }
 
         $table->incrementRow();
-    }
-
-    private function sanitize(null|float|int|string $value): ?string
-    {
-        if (null === $value) {
-            return null;
-        }
-
-        return \str_replace(
-            \array_keys(self::SANITIZE_MAP),
-            \array_values(self::SANITIZE_MAP),
-            (string) $value
-        );
     }
 
     private function getZebraStripingStyle(): Conditional

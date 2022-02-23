@@ -97,7 +97,7 @@ final class TableWriterTest extends TestCase
         $source = new PhpSpreadsheet\Spreadsheet();
 
         $columnCollection = new ColumnCollection(...[
-            new Column('disorder', 'Foo8', 11, new CellStyle\Text()),
+            new Column('disorder', 'Foo99', 11, new CellStyle\Text()),
 
             new Column('my_text', 'Foo1', 11, new CellStyle\Text()),
             new Column('my_perc', 'Foo2', 12, new CellStyle\Percentage()),
@@ -106,6 +106,7 @@ final class TableWriterTest extends TestCase
             new Column('my_amnt', 'Foo5', 15, new CellStyle\Amount()),
             new Column('my_itfc', 'Foo6', 16, new CellStyle\Text()),
             new Column('my_nodd', 'Foo7', 14, new CellStyle\Date()),
+            new Column('my_padd', 'Foo8', 14, new CellStyle\PaddedInteger()),
         ]);
 
         $table       = new Table($source->getActiveSheet(), 2, 1, \uniqid('Heading_'), [
@@ -117,6 +118,7 @@ final class TableWriterTest extends TestCase
                 'my_amnt' => 1234567.89,
                 'my_itfc' => 'AABB',
                 'my_nodd' => null,
+                'my_padd' => '0123',
 
                 'disorder'  => 'disorder',
                 'no_column' => 'no_column',
@@ -139,7 +141,8 @@ final class TableWriterTest extends TestCase
             'F3' => 'Foo6',
             'G3' => 'Foo7',
             'H3' => 'Foo8',
-            'I3' => 'No Column',
+            'I3' => 'Foo99',
+            'J3' => 'No Column',
 
             'A4' => 'text',
             'B4' => 3.45,
@@ -148,8 +151,9 @@ final class TableWriterTest extends TestCase
             'E4' => 1234567.89,
             'F4' => 'AABB',
             'G4' => null,
-            'H4' => 'disorder',
-            'I4' => 'no_column',
+            'H4' => 123,
+            'I4' => 'disorder',
+            'J4' => 'no_column',
         ];
 
         $expectedDataType = [
@@ -165,6 +169,7 @@ final class TableWriterTest extends TestCase
             'G3' => DataType::TYPE_STRING,
             'H3' => DataType::TYPE_STRING,
             'I3' => DataType::TYPE_STRING,
+            'J3' => DataType::TYPE_STRING,
 
             'A4' => DataType::TYPE_STRING,
             'B4' => DataType::TYPE_NUMERIC,
@@ -173,8 +178,9 @@ final class TableWriterTest extends TestCase
             'E4' => DataType::TYPE_NUMERIC,
             'F4' => DataType::TYPE_STRING,
             'G4' => DataType::TYPE_NULL,
-            'H4' => DataType::TYPE_STRING,
+            'H4' => DataType::TYPE_NUMERIC,
             'I4' => DataType::TYPE_STRING,
+            'J4' => DataType::TYPE_STRING,
         ];
 
         $expectedNumberFormat = [
@@ -190,6 +196,7 @@ final class TableWriterTest extends TestCase
             'G3' => NumberFormat::FORMAT_GENERAL,
             'H3' => NumberFormat::FORMAT_GENERAL,
             'I3' => NumberFormat::FORMAT_GENERAL,
+            'J3' => NumberFormat::FORMAT_GENERAL,
 
             'A4' => NumberFormat::FORMAT_GENERAL,
             'B4' => CellStyle\Percentage::FORMATCODE,
@@ -198,8 +205,9 @@ final class TableWriterTest extends TestCase
             'E4' => CellStyle\Amount::FORMATCODE,
             'F4' => NumberFormat::FORMAT_GENERAL,
             'G4' => NumberFormat::FORMAT_DATE_DDMMYYYY,
-            'H4' => NumberFormat::FORMAT_GENERAL,
+            'H4' => '0000',
             'I4' => NumberFormat::FORMAT_GENERAL,
+            'J4' => NumberFormat::FORMAT_GENERAL,
         ];
 
         $actualContent      = [];
