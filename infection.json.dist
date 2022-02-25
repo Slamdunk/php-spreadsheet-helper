@@ -19,6 +19,6 @@
             "assert\\(.+\\);"
         ]
     },
-    "minMsi": 79,
-    "minCoveredMsi": 80
+    "minMsi": 76,
+    "minCoveredMsi": 76
 }
