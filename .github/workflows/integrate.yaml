@@ -91,7 +91,7 @@ jobs:
       - name: "Run tests"
         if: ${{ matrix.php-version == '8.1' }}
         timeout-minutes: 3
-        run: "vendor/bin/phpunit --coverage-clover=coverage.xml"
+        run: "vendor/bin/phpunit --coverage-clover=coverage.xml --coverage-xml=coverage/coverage-xml --log-junit=coverage/junit.xml"
 
       - name: "Send code coverage report to Codecov.io"
         if: ${{ matrix.php-version == '8.1' }}
@@ -100,6 +100,17 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage.xml
           fail_ci_if_error: true
+
+      - name: "Infection"
+        if: ${{ matrix.php-version == '8.1' }}
+        timeout-minutes: 10
+        run: "vendor/bin/infection --ansi --threads=$(nproc) --coverage=coverage --skip-initial-tests"
+        env:
+          INFECTION_BADGE_API_KEY: ${{ secrets.INFECTION_BADGE_API_KEY }}
+
+      - name: "Output infections"
+        if: ${{ matrix.php-version == '8.1' }}
+        run: "cat infections.log"
 
   coding-standards:
     name: "Coding Standards"
