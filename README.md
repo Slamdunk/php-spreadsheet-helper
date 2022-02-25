@@ -4,6 +4,7 @@
 [![Downloads](https://img.shields.io/packagist/dt/slam/php-spreadsheet-helper.svg)](https://packagist.org/packages/slam/php-spreadsheet-helper)
 [![Integrate](https://github.com/Slamdunk/php-spreadsheet-helper/workflows/Integrate/badge.svg?branch=master)](https://github.com/Slamdunk/php-spreadsheet-helper/actions)
 [![Code Coverage](https://codecov.io/gh/Slamdunk/php-spreadsheet-helper/coverage.svg?branch=master)](https://codecov.io/gh/Slamdunk/php-spreadsheet-helper?branch=master)
+[![Infection MSI](https://badge.stryker-mutator.io/github.com/Slamdunk/php-spreadsheet-helper/master)](https://dashboard.stryker-mutator.io/reports/github.com/Slamdunk/php-spreadsheet-helper/master)
 
 ## Installation
 
