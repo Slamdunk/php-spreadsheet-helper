@@ -45,6 +45,9 @@ final class TableWriter
             ++$count;
 
             if ($table->getRowCurrent() > $this->rowsPerSheet) {
+                $table->setCount($count - 1);
+                $count = 1;
+
                 $table    = $table->splitTableOnNewWorksheet();
                 $tables[] = $table;
                 $this->writeTableHeading($table);
@@ -59,6 +62,7 @@ final class TableWriter
 
             $this->writeRow($table, $row, false);
         }
+        $table->setCount($count);
 
         if (\count($tables) > 1) {
             \reset($tables);
@@ -99,7 +103,7 @@ final class TableWriter
             }
         }
 
-        if (0 !== $count) {
+        if (0 !== $tables[0]->count()) {
             $conditional = $this->getZebraStripingStyle();
             foreach ($tables as $table) {
                 $activeSheet = $table->getActiveSheet();

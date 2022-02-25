@@ -231,6 +231,11 @@ final class TableWriterTest extends TestCase
         ]);
 
         $tables     = (new TableWriter('', 6))->writeTableToWorksheet($table);
+
+        self::assertCount(2, $tables);
+        self::assertSame(3, $tables[0]->count());
+        self::assertSame(2, $tables[1]->count());
+
         $sheets     = $this->writeAndRead($source)->getAllSheets();
         $firstSheet = $sheets[0];
 
